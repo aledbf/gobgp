@@ -5,8 +5,8 @@ TAG = 0.0
 PREFIX = aledbf/gobgp
 
 binaries:
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-w' -o ./docker/gobgpd ./gobgpd
-	CGO_ENABLED=0 GOOS=linux go build -a -installsuffix cgo -ldflags '-w' -o ./docker/gobgp ./gobgp
+	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w' -o ./docker/gobgpd ./gobgpd
+	CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-w' -o ./docker/gobgp ./gobgp
 
 container: binaries
 	docker build -t $(PREFIX):$(TAG) docker

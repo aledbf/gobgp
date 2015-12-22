@@ -1,20 +1,18 @@
-FROM ubuntu:15.10
+FROM alpine:3.2
 
-RUN apt-get update  && \
-  apt-get install -qy --no-install-recommends wget lv tcpdump supervisor quagga telnet && \
-  apt-get autoremove -y --purge && \
-  apt-get clean -y && \
-  rm -Rf /usr/share/man /usr/share/doc && \
-  rm -rf /tmp/* /var/tmp/* && \
-  rm -rf /var/lib/apt/lists/*
+RUN apk add -U wget curl tcpdump supervisor quagga bash && \
+  rm -rf /var/cache/apk/*
 
-RUN sed -i 's/bgpd=no/bgpd=yes/g' /etc/quagga/daemons
-RUN sed -i 's/zebra=no/zebra=yes/g' /etc/quagga/daemons
+RUN touch /etc/quagga/zebra.conf /etc/quagga/bgpd.conf
 
-ADD supervisord.conf /etc/supervisor/conf.d/supervisord.conf
-
-ENTRYPOINT ["/usr/bin/supervisord"]
+COPY supervisord.conf /etc/supervisord.conf
+COPY gobgp /usr/sbin/gobgp
+COPY gobgpd /usr/sbin/gobgpd
 
 ENV HOME /root
 
 WORKDIR /
+
+VOLUME /etc/quagga
+
+ENTRYPOINT ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
